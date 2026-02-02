@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <!-- Nếu file ảnh của bạn là favicon.png -->
+    <link rel="icon" href="./favicon.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống văn bản Y tế</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a6ca6;
+            --secondary: #7fcdbb;
+            --accent: #edf8b1;
+            --light: #f7f7f7;
+            --dark: #253237;
+            --success: #41ab5d;
+            --warning: #fec44f;
+            --danger: #de2d26;
+            --new: #ffc107;
+            --filter-active: #ffc107;
+            --tab-active: #ffc107;
+            
+            /* Chiều cao cố định cho Header và Footer để tính toán Layout */
+            --header-height: 65px; 
+            --footer-height: 25px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* CẤU HÌNH APP-LIKE (DESKTOP) */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.4;
+            
+            /* Khóa chiều cao màn hình */
+            height: 100vh;
+            overflow: hidden; /* Ẩn thanh cuộn body */
+            display: flex;
+            flex-direction: column; /* Xếp dọc: Header -> Main -> Footer */
+        }
+        
+        /* Snow effect */
+        .snow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+        }
+        .snowflake {
+            position: absolute; background: white; border-radius: 50%;
+            opacity: 0.8; animation: fall linear infinite;
+        }
+        @keyframes fall { to { transform: translateY(100vh); } }
+        
+        /* 1. HEADER (Cố định, không co giãn) */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: var(--dark);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            height: var(--header-height);
+            flex-shrink: 0; /* Không cho header bị bóp méo */
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        
+        .logo-text h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-text p {
+            font-size: 0.85rem;            
+            font-weight: bold;
+            color: green;            
+        }
+        
+        /* Search Container */
+        .search-container {
+            position: relative;
+            width: 50%;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px 50px 10px 18px;
+            border-radius: 50px;
+            border: 2px solid #e1e5e9;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 127, 184, 0.1);
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .advanced-search-toggle {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .advanced-search-toggle:hover {
+            color: var(--primary);
+        }
+        
+        /* Advanced Search với fixed position */
+        .advanced-search {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 0px;
+            margin-top: -5px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            opacity: 0;
+            position: fixed;
+            top: 70px; /* Điều chỉnh theo chiều cao header */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 98%;
+            max-width: 1400px;
+        }
+
+        .advanced-search.active {
+            max-height: 500px;
+            opacity: 1;
+            overflow: visible;
+        }
+        
+        /* Nút đóng tìm kiếm nâng cao trên mobile */
+        .advanced-search-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none; /* Ẩn trên desktop */
+            z-index: 1001;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .advanced-search-close:hover {
+            background: rgba(222, 45, 38, 0.1);
+        }
+        
+        .advanced-search h3 {
+            color: var(--primary);
+            margin-bottom: 0px;
+            margin-top: 0px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.0rem;
+            padding-right: 30px; /* Để chỗ cho nút đóng */
+        }
+        
+        .search-filters {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label {
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .filter-select, .filter-input {
+            padding: 8px 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: white;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 127, 184, 0.1);
+        }
+        
+        .search-action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .search-action-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .search-action-btn.secondary {
+            background: #f8f9fa;
+            color: var(--dark);
+            border: 2px solid #e1e5e9;
+        }
+        
+        .search-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 2. BODY CONTAINER (Phần giữa, co giãn tự động) */
+        .app-body {
+            flex: 1; /* Chiếm toàn bộ khoảng trống còn lại giữa header và footer */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Ngăn scroll ở wrapper này */
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 10px;
+            height: 100%; /* Chiếm hết chiều cao app-body */
+            overflow: hidden;
+        }
+        
+        /* --- SIDEBAR (Bên trái) --- */
+        .sidebar {
+            flex: 0 0 200px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 10px 5px 5px 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            /* Flex layout cho sidebar để cuộn phần danh sách */
+            display: flex;
+            flex-direction: column;
+            height: 100%; 
+            overflow: hidden;
+        }
+
+        .sidebar h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            margin-top: -5px;
+            margin-left: 2px;
+            padding-bottom: 5px;            
+            border-bottom: 2px solid var(--accent);
+            font-size: 1.1rem;
+            /* Giữ cố định phần tiêu đề */
+            flex-shrink: 0;
+        }
+        
+        .category-list-container {
+            overflow-y: auto; /* Chỉ cuộn phần danh sách */
+            flex: 1;
+            padding-right: 5px;
+            margin-top: 0px;
+            max-height: none; /* Bỏ giới hạn cũ */
+        }
+
+        .category-list { list-style: none; }
+        .category-list li { margin-bottom: 5px; }
+        .category-list a {
+            display: flex; align-items: center; gap: 10px; padding: 5px 5px;
+            border-radius: 6px; color: var(--dark); text-decoration: none;
+            font-weight: 500; font-size: 0.9rem;
+        }
+        
+        .category-list a:hover {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+            color: white; transform: translateX(3px);
+        }
+
+        .category-list a.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; transform: translateX(3px);
+        }
+
+        .category-list i {
+            width: 15px;
+            text-align: center;
+        }
+
+        /* Style cho thanh cuộn */
+        .category-list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .category-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .category-list-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .category-list-container::-webkit-scrollbar-thumb:hover {
+            background: #2E8B57;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        /* Header của Content (Tabs + Filter) đứng yên */
+        .content-fixed-header {
+            flex-shrink: 0;
+            margin-bottom: 10px;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: -5px;
+            margin-bottom: 0px;
+        }
+        
+        .content-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .document-type-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            /* Có thể thêm width: 100%; nếu cần đảm bảo nó chiếm toàn bộ chiều rộng */
+            width: 100%;
+        }
+        
+        .document-type-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            /* THÊM 2 THUỘC TÍNH NÀY: */
+            flex: 1;           /* Tự động chia đều không gian khả dụng */
+            text-align: center; /* Căn chữ ở giữa mỗi ô (tab) */
+        }
+        
+        .document-type-tab.active {
+            background: linear-gradient(135deg, var(--danger), var(--warning));
+            color: var(--light);
+        }
+        
+        .document-type-tab:hover:not(.active) {
+            background: linear-gradient(135deg, var(--success), var(--secondary));
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background: linear-gradient(135deg, var(--success), var(--secondary));            
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--danger), var(--warning));
+            color: var(--light);            
+        }
+        
+        /* Phần chứa bảng dữ liệu -> Cuộn ở đây */
+        .content-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            padding-bottom: 10px;
+        }
+
+        /* Style cho thanh cuộn */
+        .content-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content-scroll-area::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .content-scroll-area::-webkit-scrollbar-thumb {
+            background: var(--filter-active);
+            border-radius: 10px;
+        }
+
+        .content-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: #DC143C;
+        }
+
+        /* 2. Thêm wrapper cho bảng để tách phần header */
+        .documents-table-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Chiều cao cố định cho bảng */
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+        }
+
+        /* 3. Tiêu đề bảng cố định */
+        .table-header-fixed {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 8px 5px;
+            font-weight: 600;
+            display: grid;
+            grid-template-columns: 4.5fr 0.9fr 1.2fr 0.7fr 0.7fr;
+            gap: 12px;
+            font-size: 0.9rem;
+            flex-shrink: 0; /* Không bị co lại */
+            z-index: 10;
+        }
+
+        .table-header-fixed > div:not(:last-child) {
+            border-right: 1px solid rgba(255, 255, 255, 0.5); /* Đường kẻ mỏng, màu trắng mờ */
+        }
+
+        /* 4. Vùng cuộn cho nội dung bảng */
+        .table-body-scroll {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Style cho thanh cuộn */
+        .table-body-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-body-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-body-scroll::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .table-body-scroll::-webkit-scrollbar-thumb:hover {
+            background: #2E8B57;
+        }
+
+        /* Table Styles */
+        .documents-table {
+            width: 100%;            
+        }
+
+        /* 6. Đảm bảo các dòng bảng có cùng layout với header */
+        .table-header-fixed, .table-row {
+            grid-template-columns: 4.5fr 0.9fr 1.2fr 0.7fr 0.7fr;
+            gap: 12px;
+        }
+
+        /* 3. Sửa .table-header để cố định */
+        .table-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 10px;
+            font-weight: 600;
+            display: grid;
+            grid-template-columns: 4.5fr 0.9fr 1.2fr 0.7fr 0.7fr;
+            gap: 12px;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0; /* Cố định ở đầu .content-scroll-area */
+            z-index: 100;
+            /* KHÔNG có flex-shrink: 0; */
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 4.5fr 0.9fr 1.2fr 0.7fr 0.7fr;
+            gap: 12px;
+            padding: 5px 5px;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .table-row:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .status-active {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-expired {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .new-badge {
+            background: var(--new);
+            color: var(--dark);
+            padding: 3px 5px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 8px;
+            animation: glitter 1.5s infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes glitter {
+            0% { box-shadow: 0 0 5px rgba(255, 193, 7, 0.7); }
+            50% { box-shadow: 0 0 15px rgba(255, 193, 7, 0.9); }
+            100% { box-shadow: 0 0 5px rgba(255, 193, 7, 0.7); }
+        }
+        
+        .doc-number {
+            font-family: Arial, sans-serif;
+            padding: 3px 0;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .title-link {
+            color: #033e6e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .title-link:hover {
+            color: orangered;            
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: -10px;
+        }
+        
+        .page-btn {
+            padding: 5px 14px;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .page-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .page-btn.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+        
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            margin: 0 15px;
+            font-size: 0.85rem;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Chatbox */
+        .chatbox {
+            position: fixed;
+            bottom: 80px;
+            right: 15px;
+            width: 350px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transform: translateY(calc(100% + 80px));
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .chatbox.open {
+            transform: translateY(0);
+        }
+        
+        .chatbox-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbox-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .chatbox-toggle {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .chatbox-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chatbox-body {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f9f9f9;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+        
+        .message.bot {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chatbox-footer {
+            padding: 14px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: white;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            outline: none;
+            background: white;
+            transition: all 0.3s ease;
+            min-height: 44px;
+        }
+        
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+        
+        .chat-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .chat-send:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        
+        .quick-question {
+            background: #f0f5f9;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-question:hover {
+            background: var(--accent);
+        }
+                
+        /* Footer - đảm bảo luôn ở dưới */
+        footer {
+            background: rgba(55, 51, 37, 0.9);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            height: var(--footer-height);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+            /* Reset position absolute cũ */
+            position: static;                      
+        }
+        
+        .copyright {
+            text-align: center;            
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: 1;
+            }
+            
+            .search-container {
+                width: 60%;
+            }
+            
+            .search-filters {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .chatbox {
+                width: 320px;
+                height: 450px;
+            }
+            
+            .table-header-fixed, .table-row {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+            
+            .table-header-fixed .header-col:nth-child(5),
+            .table-row .table-col:nth-child(5) {
+                display: none;
+            }
+            
+            .documents-table-wrapper {
+                height: 450px; /* Điều chỉnh cho tablet */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto; /* Trên mobile vẫn cho phép cuộn */
+                padding-bottom: 0; /* Trên mobile bỏ padding body đi */
+                --header-height: none; 
+            	--footer-height: none;
+                height: auto;
+                overflow: auto; /* Ẩn thanh cuộn body */
+            }
+
+            .logo i {
+            font-size: 1.6rem;            
+            }
+            
+            .logo-text h1 {
+                font-size: 1.4rem;            
+            }
+            
+            .logo-text p {
+                font-size: 0.8rem;
+                margin-bottom: -10px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .filter-options {
+                display: none;
+            }
+            
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .chatbox {
+                width: calc(100% - 30px);
+                height: 60vh;
+                bottom: 70px;
+                right: 15px;
+            }
+            
+            .chatbox-toggle {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .table-header-fixed, .table-row {
+                grid-template-columns: 2fr 0.8fr;
+                gap: 5px;
+            }
+            
+            .table-header-fixed .header-col:nth-child(3),
+            .table-row .table-col:nth-child(3),
+            .table-header-fixed .header-col:nth-child(4),
+            .table-row .table-col:nth-child(4) {
+                display: none;
+            }
+            
+            .documents-table-wrapper {
+                height: 400px; /* Điều chỉnh cho mobile */
+            }
+            
+            /* Hiển thị nút đóng tìm kiếm nâng cao trên mobile */
+            .advanced-search-close {
+                display: flex;
+            }
+            
+            .advanced-search {
+                top: 80px; /* Điều chỉnh vị trí trên mobile */
+                width: 95%;
+            }
+            
+            .advanced-search h3 {
+                padding-right: 40px; /* Thêm khoảng trống cho nút đóng */
+            }
+
+            footer {
+                position: relative; /* Footer sẽ tự động nằm dưới nội dung, không trôi nổi nữa */
+                bottom: auto;
+                margin-top: 15px;   /* Tạo khoảng cách nhỏ với nội dung bên trên */
+                background: rgba(55, 51, 37, 1); /* Làm nền đậm hơn chút để dễ đọc trên mobile */
+            }
+            
+            /* Điều chỉnh container để không bị khoảng trắng thừa */
+            .container {
+                padding-bottom: 0px; 
+            }
+
+            .category-list-container {            
+            max-height: 220px;            
+            }
+
+            .page-btn {
+            padding: 5px 6px;            
+        	}
+
+            .content {
+            margin-top: -10px;
+            margin-bottom: 0px;
+            height: auto; /* Cho phép chiều cao tự do */
+        	overflow: visible; /* Cho phép nội dung tràn ra ngoài */
+            }
+            
+            .content-header {            
+            margin-top: -5px;
+            margin-bottom: 5px;
+        	}
+            
+            .content-header h2 {            
+            font-size: 0.9rem;            
+        	}
+            
+    		.content-scroll-area {
+        	overflow-y: visible; /* Xóa cuộn nội bộ */
+        	flex: unset; /* Cho phép phần tử này tự co giãn theo nội dung */
+        	padding-right: 0; /* Xóa padding không cần thiết khi không còn thanh cuộn */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Snow Effect -->
+    <div class="snow" id="snow"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-stethoscope"></i>
+                    <div class="logo-text">
+                        <h1>Hệ thống văn bản Y tế</h1>
+                        <p>Bệnh viện Y học cổ truyền Quảng Nam</p>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-box" id="mainSearch" placeholder="Tìm kiếm tên văn bản...">
+                    <button class="advanced-search-toggle" id="advancedSearchToggle">
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                    <button class="search-btn" id="mainSearchBtn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+        <!-- Advanced Search -->
+        <div class="advanced-search" id="advancedSearch">
+            <!-- Nút đóng tìm kiếm nâng cao (hiển thị trên mobile) -->
+            <button class="advanced-search-close" id="advancedSearchClose" aria-label="Đóng tìm kiếm nâng cao">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3><i class="fas fa-search-plus"></i> Tìm kiếm nâng cao</h3>
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label for="docNumberSearch">Số ký hiệu</label>
+                    <input type="text" id="docNumberSearch" class="filter-input" placeholder="VD: 1234/QĐ-BYT">
+                </div>
+                <div class="filter-group">
+                    <label for="categoryFilter">Chuyên khoa</label>
+                    <select id="categoryFilter" class="filter-select">
+                        <option value="">Tất cả chuyên khoa</option>
+                        <option value="Tim mạch">Tim mạch</option>
+                        <option value="Hô hấp">Hô hấp</option>
+                        <option value="Tiêu hoá">Tiêu hoá</option>
+                        <option value="Thận - Tiết niệu">Thận - Tiết niệu</option>
+                        <option value="Thần kinh">Thần kinh</option>
+                        <option value="Cơ xương khớp">Cơ xương khớp</option>
+                        <option value="Nội tiết - Chuyển hoá">Nội tiết - Chuyển hoá</option>                        
+                        <option value="Mắt">Mắt</option>
+                        <option value="Răng Hàm Mặt">Răng Hàm Mặt</option>
+                        <option value="Tai mũi họng">Truyền nhiễm</option>
+                        <option value="Da liễu">Da liễu</option>
+                        <option value="Tâm thần">Tâm thần</option>
+                        <option value="Dị ứng & Miễn dịch">Dị ứng & Miễn dịch</option>
+                        <option value="Truyền nhiễm">Truyền nhiễm</option>
+                        <option value="Nhi khoa">Nhi khoa</option>
+                        <option value="Phục hồi chức năng">Phục hồi chức năng</option>
+                        <option value="Y học cổ truyền">Y học cổ truyền</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="statusFilter">Tình trạng</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active">Còn hiệu lực</option>
+                        <option value="expired">Hết hiệu lực</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="yearFilter">Năm ban hành</label>
+                    <select id="yearFilter" class="filter-select">
+                        <option value="">Tất cả năm</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="search-action-btn primary" id="applyFilters">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <button class="search-action-btn secondary" id="resetFilters">
+                        <i class="fas fa-redo"></i> Đặt lại
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN BODY CONTAINER (Phần giữa co giãn) -->
+    <div class="app-body">
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3><i class="fa-solid fa-list-ul"></i> Chuyên khoa</h3>
+                <div class="category-list-container">
+                    <ul class="category-list">
+                        <li><a href="#" class="active" data-category="all"><i class="fa-solid fa-book-medical"></i> Tất cả</a></li>
+                        <li><a href="#" data-category="Tim mạch"><i class="fas fa-heartbeat"></i> Tim mạch</a></li>
+                        <li><a href="#" data-category="Hô hấp"><i class="fas fa-lungs"></i> Hô hấp</a></li>
+                        <li><a href="#" data-category="Tiêu hoá"><i class="fa-solid fa-poop"></i> Tiêu hoá</a></li>
+                        <li><a href="#" data-category="Thận - Tiết niệu"><i class="fa-solid fa-flask-vial"></i> Thận - Tiết niệu</a></li>
+                        <li><a href="#" data-category="Thần kinh"><i class="fas fa-brain"></i> Thần kinh</a></li>
+                        <li><a href="#" data-category="Cơ xương khớp"><i class="fas fa-bone"></i> Cơ xương khớp</a></li>
+                        <li><a href="#" data-category="Nội tiết - Chuyển hoá"><i class="fas fa-seedling"></i> Nội tiết - Chuyển hoá</a></li>                    
+                        <li><a href="#" data-category="Mắt"><i class="fa-solid fa-eye"></i> Mắt</a></li>
+                        <li><a href="#" data-category="Răng Hàm Mặt"><i class="fa-solid fa-tooth"></i> Răng Hàm Mặt</a></li>
+                        <li><a href="#" data-category="Tai mũi họng"><i class="fa-solid fa-head-side-cough"></i> Tai mũi họng</a></li>
+                        <li><a href="#" data-category="Da liễu"><i class="fa-solid fa-hand-dots"></i> Da liễu</a></li>
+                        <li><a href="#" data-category="Tâm thần"><i class="fa-solid fa-heart-circle-bolt"></i> Tâm thần</a></li>
+                        <li><a href="#" data-category="Dị ứng & Miễn dịch"><i class="fa-solid fa-user-nurse"></i> Dị ứng & Miễn dịch</a></li>
+                        <li><a href="#" data-category="Truyền nhiễm"><i class="fa-solid fa-viruses"></i> Truyền nhiễm</a></li>
+                        <li><a href="#" data-category="Nhi khoa"><i class="fa-solid fa-person-breastfeeding"></i> Nhi khoa</a></li>
+                        <li><a href="#" data-category="Phục hồi chức năng"><i class="fa-solid fa-wheelchair"></i> Phục hồi chức năng</a></li>
+                        <li><a href="#" data-category="Y học cổ truyền"><i class="fas fa-yin-yang"></i> Y học cổ truyền</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <div class="content-fixed-header">
+                <div class="document-type-tabs">
+                    <button class="document-type-tab active" data-type="treatment">Hướng dẫn chẩn đoán và điều trị</button>
+                    <button class="document-type-tab" data-type="procedure">Quy trình kỹ thuật</button>
+                    <button class="document-type-tab" data-type="other">Văn bản khác</button>
+                </div>
+                
+                <div class="content-header">
+                    <h2 id="documentTypeTitle">Hướng dẫn Chẩn đoán và điều trị - Bộ Y tế</h2>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="all">Tất cả</button>
+                        <button class="filter-btn" data-filter="latest">Mới nhất</button>
+                        <button class="filter-btn" data-filter="active">Còn hiệu lực</button>
+                        <button class="filter-btn" data-filter="expired">Hết hiệu lực</button>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Documents Table -->
+                 <!-- Vùng cuộn chứa bảng dữ liệu -->
+                
+                <!-- Thay thế phần documents-table hiện tại bằng: -->
+                    <div class="documents-table-wrapper">
+                        <!-- Header cố định -->
+                        <div class="table-header-fixed">
+                            <div class="header-col">Tên văn bản</div>
+                            <div class="header-col">Số ký hiệu</div>
+                            <div class="header-col">Chuyên khoa</div>
+                            <div class="header-col">Ban hành</div>
+                            <div class="header-col">Trạng thái</div>
+                        </div>
+                        
+                        <!-- Vùng cuộn cho nội dung bảng -->
+                        <div class="table-body-scroll">
+                            <div class="documents-table" id="tableBody">
+                                <!-- Table rows will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
+                </div>
+            
+        </div>
+    </div>
+
+    <!-- Chatbox -->
+    <div class="chatbox-toggle" id="chatboxToggle">
+        <i class="fas fa-comments"></i>
+    </div>
+    
+    <div class="chatbox" id="chatbox">
+        <div class="chatbox-header">
+            <h3>Hỗ trợ trực tuyến</h3>
+            <button class="close-btn" id="closeChatbox">&times;</button>
+        </div>
+        <div class="chatbox-body" id="chatboxBody">
+            <div class="message bot">
+                Xin chào! Tôi có thể giúp gì cho bạn? Dưới đây là một số câu hỏi thường gặp:
+            </div>
+            <div class="quick-questions">
+                <div class="quick-question" data-question="Cách tìm hướng dẫn theo số ký hiệu?">Cách tìm hướng dẫn theo số ký hiệu?</div>
+                <div class="quick-question" data-question="Làm sao biết hướng dẫn còn hiệu lực?">Làm sao biết hướng dẫn còn hiệu lực?</div>
+                <div class="quick-question" data-question="Có hướng dẫn nào về COVID-19 không?">Có hướng dẫn nào về COVID-19 không?</div>
+                <div class="quick-question" data-question="Tôi cần hỗ trợ về tìm kiếm nâng cao">Tôi cần hỗ trợ về tìm kiếm nâng cao</div>
+                <div class="quick-question" data-question="Hướng dẫn về bệnh tim mạch mới nhất">Hướng dẫn về bệnh tim mạch mới nhất</div>
+                <div class="quick-question" data-question="Văn bản về điều trị đái tháo đường">Văn bản về điều trị đái tháo đường</div>
+                <div class="quick-question" data-question="Hướng dẫn chẩn đoán viêm phổi">Hướng dẫn chẩn đoán viêm phổi</div>
+                <div class="quick-question" data-question="Văn bản về điều trị sốt xuất huyết">Văn bản về điều trị sốt xuất huyết</div>
+            </div>
+        </div>
+        <div class="chatbox-footer">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Nhập câu hỏi của bạn...">
+            <button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            
+            <div class="copyright">
+                <p>&copy; 2025 Bản quyền của BSCKI. Nguyễn Văn Dũng</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Lấy năm hiện tại
+        const currentYear = new Date().getFullYear();
+        
+        // Dữ liệu mẫu cho 25 văn bản - cập nhật với năm hiện tại
+        const guideData = [
+            {
+                id: 1,
+                title: "Hướng dẫn chẩn đoán và điều trị tăng huyết áp",
+                category: "Tim mạch",
+                docNumber: "3192/QĐ-BYT",
+                issueDate: "31/08/2010",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3192-QD-BYT-Huong-dan-chan-doan-dieu-tri-tang-huyet-ap-112471.aspx?dll=true",
+                type: "treatment"
+            },
+            {
+                id: 2,
+                title: "Hướng dẫn chẩn đoán và xử trí hội chứng mạch vành cấp",
+                category: "Tim mạch",
+                docNumber: "2187/QĐ-BYT",
+                issueDate: "03/06/2019",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-2187-QD-BYT-2019-tai-lieu-Huong-dan-chan-doan-xu-tri-hoi-chung-mach-vanh-cap-416271.aspx",
+                type: "treatment"
+            },
+            {
+                id: 3,
+                title: "Hướng dẫn chẩn đoán và điều trị hội chứng mạch vành mạn",
+                category: "Tim mạch",
+                docNumber: "2248/QĐ-BYT",
+                issueDate: "19/05/2023",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-2248-QD-BYT-2023-Huong-dan-chan-doan-va-dieu-tri-Hoi-chung-mach-vanh-man-566890.aspx",
+                type: "treatment"
+            },
+            {
+                id: 4,
+                title: "Hướng dẫn chẩn đoán và điều trị suy tim cấp và mạn",
+                category: "Tim mạch",
+                docNumber: "1857/QĐ-BYT",
+                issueDate: "30/07/2023",
+                status: "active",
+                documentLink: "https://kcb.vn/phac-do/quyet-dinh-1857-qd-byt-ngay-05-07-2022-ve-viec-ban-hanh-tai-lieu-chuyen-mon-huong-dan-chan-doan-va-dieu-tri-suy-tim-cap-.html",
+                type: "treatment"
+            },
+            {
+                id: 5,
+                title: "Hướng dẫn chẩn đoán và điều trị đột quỵ não",
+                category: "Tim mạch",
+                docNumber: "3312/QĐ-BYT",
+                issueDate: "05/11/2024",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3312-QD-BYT-2024-tai-lieu-chuyen-mon-Huong-dan-chan-doan-dieu-tri-dot-quy-nao-651734.aspx",
+                type: "treatment"
+            },
+            {
+                id: 6,
+                title: "Hướng dẫn chẩn đoán và điều trị hen phế quản người lớn và trẻ em ≥ 12 tuổi",
+                category: "Hô hấp",
+                docNumber: "1851/QĐ-BYT",
+                issueDate: "24/04/2020",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-1851-QD-BYT-2020-tai-lieu-Huong-dan-chan-doan-hen-phe-quan-nguoi-lon-va-tre-em-441076.aspx",
+                type: "treatment"
+            },
+            {
+                id: 7,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh phổi tắc nghẽn mạn tính",
+                category: "Hô hấp",
+                docNumber: "2767/QĐ-BYT",
+                issueDate: "04/07/2023",
+                status: "active",
+                documentLink: "https://kcb.vn/phac-do/quyet-dinh-2767-qd-byt-cua-bo-y-te-ngay-04-07-2023-ve-viec-ban-hanh-tai-lieu-chuyen-mon-huong-dan-chan-doan-va-dieu-tri-.html",
+                type: "treatment"
+            },
+            {
+                id: 8,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh viêm gan vi rút B",
+                category: "Tiêu hoá",
+                docNumber: "3310/QĐ-BYT",
+                issueDate: "29/07/2019",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3310-QD-BYT-2019-huong-dan-chan-doan-dieu-tri-benh-viem-gan-vi-rut-B-419819.aspx",
+                type: "treatment"
+            },
+            {
+                id: 9,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh về thận - tiết niệu",
+                category: "Thận - Tiết niệu",
+                docNumber: "3931/QĐ-BYT",
+                issueDate: "21/09/2015",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3931-QD-BYT-tai-lieu-chuyen-mon-Huong-dan-chan-doan-dieu-tri-benh-ve-than-tiet-nieu-2015-292501.aspx",
+                type: "treatment"
+            },
+            {
+                id: 10,
+                title: "Hướng dẫn chẩn đoán và điều trị triệu chứng đường tiểu dưới do tăng sinh lành tính tuyến tiền liệt",
+                category: "Thận - Tiết niệu",
+                docNumber: "1531/QĐ-BYT",
+                issueDate: "24/03/2023", // SỬA: "24/3/2023" → "24/03/2023"
+                status: "active",
+                documentLink: "https://kcb.vn/tai-lieu/huong-dan-chan-doan-dieu-tri/quyet-dinh-ve-viec-ban-hanh-tai-lieu-chuyen-mon-huong-dan-chan-doan-va-dieu-tri-trieu-chung-duong-tieu-duoi-do-tang-sinh.html",
+                type: "treatment"
+            },
+            {
+                id: 11,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh thần kinh đái tháo đường",
+                category: "Thần kinh",
+                docNumber: "3510/QĐ-BYT",
+                issueDate: "11/11/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3510-QD-BYT-2025-tai-lieu-Huong-dan-chan-doan-va-dieu-tri-benh-than-kinh-dai-thao-duong-680781.aspx",
+                type: "treatment"
+            },
+            {
+                id: 12,
+                title: "Hướng dẫn chẩn đoán và điều trị chuyên ngành cơ xương khớp",
+                category: "Cơ xương khớp",
+                docNumber: "361/QĐ-BYT",
+                issueDate: "25/01/2014",
+                status: "active",
+                documentLink: "https://kcb.vn/phac-do/huong-dan-chan-doan-va-dieu-tri-cac-benh-co-xuong-khop.html",
+                type: "treatment"
+            },
+            {
+                id: 13,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh Nội tiết - Chuyển hoá",
+                category: "Nội tiết - Chuyển hoá",
+                docNumber: "3879/QĐ-BYT",
+                issueDate: "30/09/2014",
+                status: "active",
+                documentLink: "https://kcb.vn/thu-vien-tai-lieu/huong-dan-chan-doan-va-dieu-tri-benh-noi-tiet-chuyen-hoa.html",
+                type: "treatment"
+            },
+            {
+                id: 14,
+                title: "Hướng dẫn chẩn đoán và điều trị tiền đái tháo đường",
+                category: "Nội tiết - Chuyển hoá",
+                docNumber: "3087/QĐ-BYT",
+                issueDate: "16/07/2020",
+                status: "active",
+                documentLink: "https://kcb.vn/van-ban/quyet-dinh-so-3087-qd-byt-ngay-16-thang-7-nam-2020-ve-viec-ban-hanh-tai-lieu-chuyen-mon-huong-dan-chan-doan-va-dieu-tri-.html",
+                type: "treatment"
+            },
+            {
+                id: 15,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh đái tháo đường típ 1 ở trẻ em và thanh thiếu niên",
+                category: "Nội tiết - Chuyển hoá",
+                docNumber: "1760/QĐ-BYT",
+                issueDate: "21/06/2024",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-1760-QD-BYT-2024-tai-lieu-chuyen-mon-chan-doan-benh-dai-thao-duong-tip-1-o-tre-em-614368.aspx",
+                type: "treatment"
+            },
+            {
+                id: 16,
+                title: "Hướng dẫn chẩn đoán và điều trị đái tháo đường típ 2",
+                category: "Nội tiết - Chuyển hoá",
+                docNumber: "5481/QĐ-BYT",
+                issueDate: "30/12/2020",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-5481-QD-BYT-2020-tai-lieu-chuyen-mon-Huong-dan-chan-doan-dieu-tri-dai-thao-duong-tip-2-460925.aspx",
+                type: "treatment"
+            },
+            {
+                id: 17,
+                title: "Hướng dẫn chẩn đoán và điều trị loét bàn chân do đái tháo đường",
+                category: "Nội tiết - Chuyển hoá",
+                docNumber: "1530/QĐ-BYT",
+                issueDate: "24/03/2023",
+                status: "active",
+                documentLink: "https://kcb.vn/tai-lieu/huong-dan-chan-doan-dieu-tri/quyet-dinh-so-1530-qd-byt-ngay-24-3-2023-ve-viec-ban-hanh-tai-lieu-chuyen-mon-huong-dan-chan-doan-dieu-tri-loet-ban-chan.html",
+                type: "treatment"
+            },
+            {
+                id: 18,
+                title: "Hướng dẫn chẩn đoán và điều trị các bệnh về mắt",
+                category: "Mắt",
+                docNumber: "40/QĐ-BYT",
+                issueDate: "12/01/2015",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-40-QD-BYT-tai-lieu-chuyen-mon-Huong-dan-chan-doan-va-dieu-tri-cac-benh-ve-mat-263803.aspx",
+                type: "treatment"
+            },
+            {
+                id: 19,
+                title: "Hướng dẫn chẩn đoán và điều trị một số bệnh về Răng Hàm Mặt",
+                category: "Răng Hàm Mặt",
+                docNumber: "3108/QĐ-BYT",
+                issueDate: "28/07/2015",
+                status: "active",
+                documentLink: "https://kcb.vn/phac-do/huong-dan-chan-doan-va-dieu-tri-mot-so-benh-ve-rang-ham-mat.html",
+                type: "treatment"
+            },
+            {
+                id: 20,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh về tai mũi họng",
+                category: "Tai mũi họng",
+                docNumber: "5643/QĐ-BYT",
+                issueDate: "31/12/2015",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-5643-QD-BYT-2015-tai-lieu-chuyen-mon-Huong-dan-chan-doan-dieu-tri-benh-tai-mui-hong-350467.aspx",
+                type: "treatment"
+            },
+            {
+                id: 21,
+                title: "Hướng dẫn chẩn đoán và điều trị các bệnh Da liễu",
+                category: "Da liễu",
+                docNumber: "4416/QĐ-BYT",
+                issueDate: "06/12/2023",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-4416-QD-BYT-2023-Huong-dan-Chan-doan-va-dieu-tri-cac-benh-Da-lieu-590054.aspx",
+                type: "treatment"
+            },
+            {
+                id: 22,
+                title: "Hướng dẫn chẩn đoán và điều trị một số rối loạn tâm thần thường gặp",
+                category: "Tâm thần",
+                docNumber: "2058/QĐ-BYT",
+                issueDate: "14/05/2020", // SỬA: "14/5/2020" → "14/05/2020"
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-2058-QD-BYT-2020-tai-lieu-Huong-dan-chan-doan-dieu-tri-roi-loan-tam-than-thuong-gap-442583.aspx",
+                type: "treatment"
+            },
+            {
+                id: 23,
+                title: "Hướng dẫn chẩn đoán và điều trị COVID-19",
+                category: "Truyền nhiễm",
+                docNumber: "2671/QĐ-BYT",
+                issueDate: "26/06/2023",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-2671-QD-BYT-2023-Huong-dan-chan-doan-va-dieu-tri-COVID19-570917.aspx",
+                type: "treatment"
+            },
+            {
+                id: 24,
+                title: "Hướng dẫn chẩn đoán và điều trị chuyên ngành Phục hồi chức năng",
+                category: "Phục hồi chức năng",
+                docNumber: "3109/QĐ-BYT",
+                issueDate: "19/08/2014",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3109-QD-BYT-2014-tai-lieu-chan-doan-dieu-tri-chuyen-nganh-Phuc-hoi-chuc-nang-Bo-Y-te-248309.aspx",
+                type: "treatment"
+            },
+            {
+                id: 25,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh theo Y học cổ truyền, kết hợp y học cổ truyền với y học hiện đại",
+                category: "Y học cổ truyền",
+                docNumber: "5013/QĐ-BYT",
+                issueDate: "01/12/2020",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-5013-QD-BYT-2020-chan-doan-va-dieu-tri-benh-theo-y-hoc-co-truyen-458502.aspx",
+                type: "treatment"
+            },
+            {
+                id: 26,
+                title: "Quy trình kỹ thuật chuyên ngành y học cổ truyền",
+                category: "Y học cổ truyền",
+                docNumber: "5480/QĐ-BYT",
+                issueDate: "30/12/2020",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-5480-QD-BYT-2020-tai-lieu-Huong-dan-Quy-trinh-ky-thuat-chuyen-nganh-y-hoc-co-truyen-460982.aspx?dll=true",
+                type: "procedure"
+            },
+            {
+                id: 27,
+                title: "Danh mục kỹ thuật trong khám bệnh, chữa bệnh",
+                category: "Danh mục kỹ thuật",
+                docNumber: "23/2024/TT-BYT",
+                issueDate: "18/10/2024",
+                status: "active",
+                documentLink: "https://vanban.chinhphu.vn/?pageid=27160&docid=211508&classid=1&orggroupid=4",
+                type: "other"
+            },
+            {
+                id: 28,
+                title: "Quy định chi tiết một số điều của Luật Khám bệnh, chữa bệnh",
+                category: "Luật Khám, chữa bệnh",
+                docNumber: "32/2023/TT-BYT",
+                issueDate: "31/12/2023",
+                status: "active",
+                documentLink: "https://bvdaihoccoso3.com.vn/thong-tu-32-2023-ttbyt-luat-kham-benh-chua-benh-2023/",
+                type: "other"
+            },
+	    {
+                id: 29,
+                title: "Hướng dẫn chẩn đoán và điều trị bệnh theo y học cổ truyền, kết hợp y học cổ truyền với y học hiện đại - Tập II",
+                category: "Y học cổ truyền",
+                docNumber: "3991/QĐ-BYT",
+                issueDate: "29/12/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3991-QD-BYT-2025-Tai-lieu-Huong-dan-dieu-tri-benh-theo-y-hoc-co-truyen-tap-II-686959.aspx",
+                type: "treatment"
+            }
+        ];
+
+        // Hàm kiểm tra xem văn bản có phải là mới không (ban hành trong năm hiện tại)
+        function isNewDocument(issueDate) {
+            if (!issueDate) return false;
+            const issueYear = parseInt(issueDate.split('/')[2]);
+            return issueYear === currentYear;
+        }
+
+        // Hàm chuyển đổi ngày "dd/mm/yyyy" thành timestamp
+        function parseDateString(dateString) {
+            if (!dateString) return 0;
+            try {
+                const parts = dateString.split('/');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1;
+                    const year = parseInt(parts[2], 10);
+                    return new Date(year, month, day).getTime();
+                }
+            } catch (error) {
+                console.warn("Lỗi chuyển đổi ngày:", dateString);
+            }
+            return 0;
+        }
+
+        // Chuẩn hóa và sắp xếp dữ liệu theo ngày (mới nhất đầu tiên)
+        function normalizeAndSortData() {
+            // 1. Chuẩn hóa các ngày thiếu số 0
+            guideData.forEach(item => {
+                if (item.issueDate) {
+                    const parts = item.issueDate.split('/');
+                    if (parts.length === 3) {
+                        // Thêm số 0 cho tháng nếu cần
+                        if (parts[1].length === 1) {
+                            parts[1] = '0' + parts[1];
+                        }
+                        item.issueDate = parts.join('/');
+                        item.sortDate = parseDateString(item.issueDate);
+                    }
+                }
+            });
+            
+            // 2. Sắp xếp toàn bộ guideData theo ngày (mới nhất trước)
+            guideData.sort((a, b) => {
+                const dateA = parseDateString(a.issueDate);
+                const dateB = parseDateString(b.issueDate);
+                return dateB - dateA; // Mới nhất trước
+            });
+        }
+
+        // Dữ liệu câu trả lời cho chatbox
+        const chatResponses = {
+            "Cách tìm hướng đoán theo số ký hiệu?": "Bạn có thể tìm hướng dẫn theo số ký hiệu bằng cách:\n1. Sử dụng ô tìm kiếm nâng cao\n2. Nhập số ký hiệu vào ô 'Số ký hiệu'\n3. Nhấn 'Tìm kiếm' để xem kết quả",
+            "Làm sao biết hướng dẫn còn hiệu lực?": "Để kiểm tra tình trạng hiệu lực của hướng dẫn:\n1. Xem badge màu sắc trên thẻ hướng dẫn\n   - Xanh: Còn hiệu lực\n   - Đỏ: Hết hiệu lực\n2. Văn bản mới có badge NEW màu vàng lấp lánh",
+            "Có hướng dẫn nào về COVID-19 không?": "Có, chúng tôi có hướng dẫn cập nhật về COVID-19:\n1. Tìm kiếm 'COVID-19' trong ô tìm kiếm chính\n2. Lọc theo chuyên khoa 'Truyền nhiễm'\n3. Xem hướng dẫn số 4567/QĐ-BYT ban hành ngày 30/07/2023",
+            "Tôi cần hỗ trợ về tìm kiếm nâng cao": "Tìm kiếm nâng cao cho phép bạn:\n1. Tìm theo số ký hiệu văn bản\n2. Lọc theo chuyên khoa\n3. Lọc theo tình trạng hiệu lực\n4. Lọc theo năm ban hành\nSử dụng kết hợp các bộ lọc để thu hẹp kết quả tìm kiếm",
+            "Làm thế nào để tải văn bản chính thức?": "Để tải văn bản chính thức:\n1. Nhấn vào liên kết tiêu đề văn bản\n2. Bạn sẽ được chuyển đến trang chính thức của Bộ Y tế\n3. Tại đó bạn có thể tải về bản PDF đầy đủ",
+            "Hướng dẫn về bệnh tim mạch mới nhất": "Các hướng dẫn mới nhất về tim mạch:\n1. Hướng dẫn chẩn đoán và điều trị tăng huyết áp 2025 (1234/QĐ-BYT)\n2. Xử trí cơn đau thắt ngực (7890/QĐ-BYT)\n3. Hướng dẫn chẩn đoán và điều trị suy tim (9012/QĐ-BYT)",
+            "Văn bản về điều trị đái tháo đường": "Các văn bản về đái tháo đường:\n1. Quản lý đái tháo đường type 2 (2345/QĐ-BYT)\n2. Điều trị rối loạn lipid máu (8901/QĐ-BYT)\nSử dụng bộ lọc chuyên khoa 'Nội tiết' để xem thêm",
+            "Hướng dẫn chẩn đoán viêm phổi": "Hướng dẫn về viêm phổi:\n1. Chẩn đoán và điều trị viêm phổi cộng đồng (3456/QĐ-BYT)\n2. Quản lý bệnh phổi tắc nghẽn mạn tính (0123/QĐ-BYT)\n3. Xử trí cơn hen phế quản cấp (2223/QĐ-BYT)",
+            "Văn bản về điều trị sốt xuất huyết": "Hướng dẫn về sốt xuất huyết:\n1. Điều trị sốt xuất huyết Dengue (1523/QĐ-BYT)\n2. Xử trí ngộ độc cấp (1823/QĐ-BYT)\nSử dụng bộ lọc chuyên khoa 'Truyền nhiễm' để xem thêm"
+        };
+
+        // Biến toàn cục cho phân trang
+        let currentPage = 1;
+        const itemsPerPage = 15;
+        let currentData = [];
+        let currentDocumentType = "treatment";
+
+        // Hàm đồng bộ TẤT CẢ filter - CỐT LÕI
+        function syncAllFilters() {
+            const searchTerm = document.getElementById('mainSearch').value.toLowerCase().trim();
+            const activeCategory = document.querySelector('.category-list a.active').getAttribute('data-category');
+            const activeStatus = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+            
+            // 1. Lọc theo TAB hiện tại
+            currentData = guideData.filter(guide => guide.type === currentDocumentType);
+            
+            // 2. Lọc theo SIDEBAR (chuyên khoa)
+            if (activeCategory !== 'all') {
+                currentData = currentData.filter(guide => guide.category === activeCategory);
+            }
+            
+            // 3. Lọc theo TÌM KIẾM
+            if (searchTerm) {
+                currentData = currentData.filter(guide => 
+                    guide.title.toLowerCase().includes(searchTerm) ||
+                    guide.docNumber.toLowerCase().includes(searchTerm) ||
+                    guide.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // 4. Lọc theo TRẠNG THÁI
+            if (activeStatus === 'active') {
+                currentData = currentData.filter(guide => guide.status === 'active');
+            } else if (activeStatus === 'expired') {
+                currentData = currentData.filter(guide => guide.status === 'expired');
+            } else if (activeStatus === 'latest') {
+                currentData = currentData.filter(guide => isNewDocument(guide.issueDate));
+            }
+            
+            // 5. SẮP XẾP theo ngày (mới nhất đầu tiên) - LUÔN ÁP DỤNG
+            currentData.sort((a, b) => {
+                const dateA = parseDateString(a.issueDate);
+                const dateB = parseDateString(b.issueDate);
+                return dateB - dateA; // Mới nhất trước
+            });
+            
+            currentPage = 1;
+            renderPage();
+        }
+
+        // Khởi tạo trang
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chuẩn hóa và sắp xếp dữ liệu trước
+            normalizeAndSortData();
+            
+            // Khởi tạo dữ liệu ban đầu
+            currentData = guideData.filter(guide => guide.type === currentDocumentType);
+            
+            renderPage();
+            setupEventListeners();
+            createSnowflakes();
+            checkScreenSize();
+        });
+
+        // Tạo hiệu ứng tuyết rơi
+        function createSnowflakes() {
+            const snowContainer = document.getElementById('snow');
+            const snowflakeCount = 15;
+            
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                
+                const size = Math.random() * 5 + 2;
+                snowflake.style.width = `${size}px`;
+                snowflake.style.height = `${size}px`;
+                snowflake.style.left = `${Math.random() * 100}%`;
+                
+                const duration = Math.random() * 10 + 5;
+                snowflake.style.animationDuration = `${duration}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                
+                snowContainer.appendChild(snowflake);
+            }
+        }
+
+        // Kiểm tra kích thước màn hình
+        function checkScreenSize() {
+            const advancedSearchCloseBtn = document.getElementById('advancedSearchClose');
+            const isMobile = window.innerWidth <= 768;
+            advancedSearchCloseBtn.style.display = isMobile ? 'flex' : 'none';
+        }
+
+        // Render trang với phân trang
+        function renderPage() {
+            renderTable(getCurrentPageData());
+            renderPagination();
+        }
+
+        // Lấy dữ liệu cho trang hiện tại
+        function getCurrentPageData() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            return currentData.slice(startIndex, endIndex);
+        }
+
+        // Render bảng
+        function renderTable(data) {
+            const container = document.getElementById('tableBody');
+            container.innerHTML = '';
+            
+            if (data.length === 0) {
+                container.innerHTML = '<div class="no-results" style="text-align: center; padding: 10px; color: #666; font-size: 1.5rem;"><i class="fas fa-search" style="font-size: 2.5rem; margin-bottom: 10px; color: #aaa;"></i><h4 style="margin: 0 0 5px 0; font-size: 1.2rem; color: #333;">Không tìm thấy kết quả</h4><p style="margin: 0; font-size: 0.9rem; color: #666;">Không có bệnh nào phù hợp với từ khóa tìm kiếm của bạn.</p></div>';
+                return;
+            }
+            
+            data.forEach(guide => {
+                let statusText = "";
+                let statusClass = "";
+                
+                if (guide.status === "active") {
+                    statusText = "Còn hiệu lực";
+                    statusClass = "status-active";
+                } else if (guide.status === "expired") {
+                    statusText = "Hết hiệu lực";
+                    statusClass = "status-expired";
+                }
+                
+                const isNew = isNewDocument(guide.issueDate);
+                
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <div class="table-col">
+                        <a href="${guide.documentLink}" target="_blank" class="title-link">
+                            ${guide.title}${isNew ? '<span class="new-badge">NEW</span>' : ''}
+                        </a>
+                    </div>
+                    <div class="table-col">
+                        <span class="doc-number">${guide.docNumber}</span>
+                    </div>
+                    <div class="table-col">${guide.category}</div>
+                    <div class="table-col">${guide.issueDate}</div>
+                    <div class="table-col">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Render phân trang
+        function renderPagination() {
+            const totalPages = Math.ceil(currentData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Nút Về đầu
+            paginationHTML += currentPage > 1 
+                ? `<button class="page-btn" data-page="1"><i class="fas fa-angle-double-left"></i> Đầu</button>`
+                : `<button class="page-btn disabled"><i class="fas fa-angle-double-left"></i> Đầu</button>`;
+            
+            // Nút Previous
+            paginationHTML += currentPage > 1 
+                ? `<button class="page-btn" data-page="${currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`
+                : `<button class="page-btn disabled"><i class="fas fa-chevron-left"></i></button>`;
+            
+            // Các nút trang
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === currentPage) {
+                    paginationHTML += `<button class="page-btn active">${i}</button>`;
+                } else {
+                    paginationHTML += `<button class="page-btn" data-page="${i}">${i}</button>`;
+                }
+            }
+            
+            // Nút Next
+            paginationHTML += currentPage < totalPages 
+                ? `<button class="page-btn" data-page="${currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`
+                : `<button class="page-btn disabled"><i class="fas fa-chevron-right"></i></button>`;
+            
+            // Nút Về cuối
+            paginationHTML += currentPage < totalPages 
+                ? `<button class="page-btn" data-page="${totalPages}">Cuối <i class="fas fa-angle-double-right"></i></button>`
+                : `<button class="page-btn disabled">Cuối <i class="fas fa-angle-double-right"></i></button>`;
+            
+            // Thông tin trang
+            paginationHTML += `<div class="page-info">Trang ${currentPage} / ${totalPages}</div>`;
+            
+            pagination.innerHTML = paginationHTML;
+            
+            // Thêm event listeners cho các nút phân trang
+            document.querySelectorAll('.page-btn:not(.disabled)').forEach(button => {
+                button.addEventListener('click', function() {
+                    const page = parseInt(this.getAttribute('data-page'));
+                    if (page) {
+                        currentPage = page;
+                        renderPage();
+                    }
+                });
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tìm kiếm chính
+            document.getElementById('mainSearchBtn').addEventListener('click', syncAllFilters);
+            document.getElementById('mainSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') syncAllFilters();
+            });
+            
+            // Toggle tìm kiếm nâng cao
+            document.getElementById('advancedSearchToggle').addEventListener('click', toggleAdvancedSearch);
+            document.getElementById('advancedSearchClose').addEventListener('click', closeAdvancedSearch);
+            
+            // Bộ lọc nâng cao
+            document.getElementById('applyFilters').addEventListener('click', applyAdvancedFilters);
+            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+            
+            // Lọc theo danh mục
+            document.querySelectorAll('.category-list a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.category-list a').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    syncAllFilters();
+                });
+            });
+            
+            // Lọc theo nút filter
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    syncAllFilters();
+                });
+            });
+            
+            // Chuyển đổi loại văn bản
+            document.querySelectorAll('.document-type-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.document-type-tab').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    const type = this.getAttribute('data-type');
+                    switchDocumentType(type);
+                });
+            });
+            
+            // Chatbox
+            document.getElementById('chatboxToggle').addEventListener('click', toggleChatbox);
+            document.getElementById('closeChatbox').addEventListener('click', toggleChatbox);
+            document.getElementById('chatSend').addEventListener('click', sendMessage);
+            document.getElementById('chatInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            // Quick questions
+            document.querySelectorAll('.quick-question').forEach(question => {
+                question.addEventListener('click', function() {
+                    const questionText = this.getAttribute('data-question');
+                    document.getElementById('chatInput').value = questionText;
+                    sendMessage();
+                });
+            });
+            
+            // Đóng tìm kiếm nâng cao khi click ra ngoài
+            document.addEventListener('click', function(event) {
+                const advancedSearch = document.getElementById('advancedSearch');
+                const advancedSearchToggle = document.getElementById('advancedSearchToggle');
+                
+                if (advancedSearch.classList.contains('active') && 
+                    !advancedSearch.contains(event.target) && 
+                    !advancedSearchToggle.contains(event.target) &&
+                    window.innerWidth <= 768) {
+                    closeAdvancedSearch();
+                }
+            });
+            
+            // Responsive
+            window.addEventListener('resize', checkScreenSize);
+        }
+
+        // Chuyển đổi loại văn bản - FIX: GIỮ TÌM KIẾM
+        function switchDocumentType(type) {
+            currentDocumentType = type;
+            
+            // Cập nhật tiêu đề
+            let titleText = "";
+            switch(type) {
+                case "treatment": titleText = "Hướng dẫn Chẩn đoán và điều trị - Bộ Y tế"; break;
+                case "procedure": titleText = "Quy trình kỹ thuật - Bộ Y tế"; break;
+                case "other": titleText = "Văn bản khác"; break;
+            }
+            document.getElementById('documentTypeTitle').textContent = titleText;
+            
+            // QUAN TRỌNG: KHÔNG reset ô tìm kiếm, KHÔNG reset sidebar
+            // Chỉ reset các phần KHÔNG liên quan:
+            document.getElementById('docNumberSearch').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('yearFilter').value = '';
+            
+            // Đóng tìm kiếm nâng cao
+            const advancedSearch = document.getElementById('advancedSearch');
+            if (advancedSearch.classList.contains('active')) {
+                advancedSearch.classList.remove('active');
+            }
+            
+            // Gọi sync - sẽ áp dụng tất cả filter hiện tại (bao gồm tìm kiếm)
+            syncAllFilters();
+        }
+
+        // Tìm kiếm nâng cao
+        function toggleAdvancedSearch() {
+            const advancedSearch = document.getElementById('advancedSearch');
+            const isActive = advancedSearch.classList.contains('active');
+            
+            if (isActive) {
+                closeAdvancedSearch();
+            } else {
+                openAdvancedSearch();
+            }
+        }
+
+        function openAdvancedSearch() {
+            const advancedSearch = document.getElementById('advancedSearch');
+            advancedSearch.classList.add('active');
+            
+            if (window.innerWidth <= 768) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function closeAdvancedSearch() {
+            const advancedSearch = document.getElementById('advancedSearch');
+            advancedSearch.classList.remove('active');
+        }
+
+        // Tìm kiếm nâng cao - FIX: KẾT HỢP VỚI FILTER HIỆN TẠI
+        function applyAdvancedFilters() {
+            const docNumber = document.getElementById('docNumberSearch').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const year = document.getElementById('yearFilter').value;
+            
+            // Bắt đầu với filter hiện tại (tab + sidebar + search cơ bản)
+            syncAllFilters();
+            
+            // Áp dụng thêm filter nâng cao
+            if (docNumber) {
+                currentData = currentData.filter(guide => 
+                    guide.docNumber.toLowerCase().includes(docNumber)
+                );
+            }
+            
+            if (category) {
+                currentData = currentData.filter(guide => guide.category === category);
+            }
+            
+            if (status) {
+                currentData = currentData.filter(guide => guide.status === status);
+            }
+            
+            if (year) {
+                currentData = currentData.filter(guide => 
+                    guide.issueDate.includes(year)
+                );
+            }
+            
+            // Sắp xếp lại theo ngày
+            currentData.sort((a, b) => {
+                const dateA = parseDateString(a.issueDate);
+                const dateB = parseDateString(b.issueDate);
+                return dateB - dateA;
+            });
+            
+            currentPage = 1;
+            renderPage();
+            
+            if (window.innerWidth <= 768) {
+                closeAdvancedSearch();
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('docNumberSearch').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('yearFilter').value = '';
+            
+            // Trở về filter hiện tại (tab + sidebar + search)
+            syncAllFilters();
+        }
+
+        // Chatbox functions
+        function toggleChatbox() {
+            const chatbox = document.getElementById('chatbox');
+            const isOpen = chatbox.classList.contains('open');
+            
+            if (isOpen) {
+                chatbox.classList.remove('open');
+            } else {
+                chatbox.classList.add('open');
+                setTimeout(() => {
+                    document.getElementById('chatInput').focus();
+                }, 300);
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                setTimeout(() => {
+                    let response = "Xin lỗi, tôi không hiểu câu hỏi của bạn. Vui lòng thử lại hoặc chọn một trong các câu hỏi gợi ý bên dưới.";
+                    
+                    for (const [question, answer] of Object.entries(chatResponses)) {
+                        if (message.toLowerCase().includes(question.toLowerCase().substring(0, 10))) {
+                            response = answer;
+                            break;
+                        }
+                    }
+                    
+                    addMessage(response, 'bot');
+                }, 1000);
+            }
+            
+            input.focus();
+        }
+
+        function addMessage(text, sender) {
+            const chatboxBody = document.getElementById('chatboxBody');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const lines = text.split('\n');
+            lines.forEach((line, index) => {
+                if (index > 0) {
+                    messageDiv.appendChild(document.createElement('br'));
+                }
+                messageDiv.appendChild(document.createTextNode(line));
+            });
+            
+            chatboxBody.appendChild(messageDiv);
+            chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        }
+    </script>
+</body>
+</html>
