@@ -308,6 +308,42 @@
                 status: "active",
                 documentLink: "https://thuvienphapluat.vn/van-ban/Bao-hiem/Thong-tu-12-2026-TT-BTC-thu-tuc-giam-dinh-chi-phi-kham-chua-benh-bao-hiem-y-te-694954.aspx",
                 type: "other"
+            },
+	    {
+                title: "Hướng dẫn lập dự kiến chi, điều chỉnh dự kiến chi khám bệnh, chữa bệnh bảo hiểm y tế và việc xác định số chi khám bệnh, chữa bệnh bảo hiểm y tế vượt dự kiến chi được Quỹ Bảo hiểm y tế thanh toán",
+                category: "Bảo hiểm y tế",
+                docNumber: "582/QĐ-BYT",
+                issueDate: "09/03/2026",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-582-QD-BYT-2026-Tai-lieu-huong-dan-lap-du-kien-chi-kham-chua-benh-bao-hiem-y-te-696935.aspx",
+                type: "other"
+            },
+	    {
+                title: "Luật Bảo hiểm y tế sửa đổi 2024",
+                category: "Bảo hiểm y tế",
+                docNumber: "51/2024/QH15",
+                issueDate: "27/11/2024",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/Bao-hiem/Luat-Bao-hiem-y-te-sua-doi-2024-505750.aspx",
+                type: "other"
+            },
+	    {
+                title: "Quy định chi tiết và hướng dẫn thi hành một số điều của Luật Bảo hiểm y tế",
+                category: "Bảo hiểm y tế",
+                docNumber: "01/2025/TT-BYT",
+                issueDate: "01/01/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/Bao-hiem/Thong-tu-01-2025-TT-BYT-huong-dan-Luat-Bao-hiem-y-te-623659.aspx",
+                type: "other"
+            },
+	    {
+                title: "Quy định chi tiết và hướng dẫn thi hành một số điều của Luật Bảo hiểm y tế",
+                category: "Bảo hiểm y tế",
+                docNumber: "188/2025/NĐ-CP",
+                issueDate: "01/07/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/Bao-hiem/Nghi-dinh-188-2025-ND-CP-huong-dan-Luat-Bao-hiem-y-te-641049.aspx",
+                type: "other"
             }
         ];
 
