@@ -256,7 +256,6 @@
                 type: "other"
             },
             {
-                // ĐÃ XÓA DÒNG id: 29,
                 title: "Hướng dẫn chẩn đoán và điều trị bệnh theo y học cổ truyền, kết hợp y học cổ truyền với y học hiện đại - Tập II",
                 category: "Y học cổ truyền",
                 docNumber: "3991/QĐ-BYT",
@@ -264,6 +263,51 @@
                 status: "active",
                 documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3991-QD-BYT-2025-Tai-lieu-Huong-dan-dieu-tri-benh-theo-y-hoc-co-truyen-tap-II-686959.aspx",
                 type: "treatment"
+            },
+	    {
+                title: "Hướng dẫn quy trình kỹ thuật chuyên ngành y học cổ truyền",
+                category: "Y học cổ truyền",
+                docNumber: "486/QĐ-BYT",
+                issueDate: "13/02/2026",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-486-QD-BYT-2026-Tai-lieu-Huong-dan-quy-trinh-ky-thuat-chuyen-nganh-y-hoc-co-truyen-695324.aspx",
+                type: "procedure"
+            },
+	    {
+                title: "Hướng dẫn quy trình kỹ thuật về Phục hồi chức năng - Tập 1",
+                category: "Phục hồi chức năng",
+                docNumber: "3553/QĐ-BYT",
+                issueDate: "14/11/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3553-QD-BYT-2025-Tai-lieu-Huong-dan-quy-trinh-ky-thuat-ve-Phuc-hoi-chuc-nang-Tap-1-680785.aspx",
+                type: "procedure"
+            },
+	    {
+                title: "Hướng dẫn quy trình kỹ thuật về Phục hồi chức năng - Tập 2",
+                category: "Phục hồi chức năng",
+                docNumber: "3554/QĐ-BYT",
+                issueDate: "14/11/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3554-QD-BYT-2025-Tai-lieu-Huong-dan-quy-trinh-ky-thuat-ve-Phuc-hoi-chuc-nang-Tap-2-680784.aspx",
+                type: "procedure"
+            },
+	    {
+                title: "Hướng dẫn quy trình kỹ thuật về Phục hồi chức năng - Tập 3",
+                category: "Phục hồi chức năng",
+                docNumber: "3555/QĐ-BYT",
+                issueDate: "14/11/2025",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Quyet-dinh-3555-QD-BYT-2025-Huong-dan-quy-trinh-ky-thuat-ve-Phuc-hoi-chuc-nang-Tap-3-680786.aspx",
+                type: "procedure"
+            },
+	    {
+                title: "Quy định trình tự, thủ tục giám định chi phí khám bệnh, chữa bệnh bảo hiểm y tế, biểu mẫu tổng hợp thanh toán, quyết toán và hướng dẫn Nghị định 188/2025/NĐ-CP hướng dẫn Luật Bảo hiểm y tế",
+                category: "Bảo hiểm y tế",
+                docNumber: "12/2026/TT-BTC",
+                issueDate: "10/02/2026",
+                status: "active",
+                documentLink: "https://thuvienphapluat.vn/van-ban/Bao-hiem/Thong-tu-12-2026-TT-BTC-thu-tuc-giam-dinh-chi-phi-kham-chua-benh-bao-hiem-y-te-694954.aspx",
+                type: "other"
             }
         ];
 
